@@ -1,10 +1,14 @@
-﻿namespace LibraryAPI.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace LibraryAPI.Models
 {
-    public class User
+    public class User 
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
+
         public string Password { get; set; }
+       
     }
 }

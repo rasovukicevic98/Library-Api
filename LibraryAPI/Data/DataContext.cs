@@ -1,10 +1,11 @@
 ﻿using LibraryAPI.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 
 namespace LibraryAPI.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext
     {
 
         public DataContext(DbContextOptions<DataContext> options):base(options) 
@@ -12,7 +13,7 @@ namespace LibraryAPI.Data
             
         }
 
-        public DbSet<User> Users {  get; set; }
+       
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
