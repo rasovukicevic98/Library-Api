@@ -1,9 +1,10 @@
-﻿using LibraryAPI.Models;
+﻿using CSharpFunctionalExtensions;
+using LibraryAPI.Models;
 
 namespace LibraryAPI.Services
 {
     public interface IAuthService
     {
-        Task<bool> RegisterUser(User user);
+        Task<Result<User, IEnumerable<string>>> RegisterUser(User user);
     }
 }

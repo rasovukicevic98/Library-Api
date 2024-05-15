@@ -17,10 +17,23 @@ namespace LibraryAPI.Controllers
             _authService = authService;
         }
 
+        /// <summary>
+        /// Registers a new user.
+        /// </summary>
+        ///<remarks>
+        ///Role can only be "User" or "Librarian".
+        /// </remarks>
         [HttpPost]
-        public async Task<bool> RegisterUser( User user)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> RegisterUser( User user)
         {
-            return await _authService.RegisterUser(user);
+            var result =  await _authService.RegisterUser(user);
+            if(!result.IsSuccess)
+            {
+                return BadRequest(result.Error);
+            }
+            return Ok(result.IsSuccess); 
         }
     }
 }
