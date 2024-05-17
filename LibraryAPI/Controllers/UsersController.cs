@@ -1,4 +1,5 @@
-﻿using LibraryAPI.Models;
+﻿using LibraryAPI.Constants;
+using LibraryAPI.Models;
 using LibraryAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -8,16 +9,15 @@ using Org.BouncyCastle.Crypto.Generators;
 
 namespace LibraryAPI.Controllers
 {
-    
     [ApiController]
     [Route("api/[controller]")]
-    
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IAuthService _authService;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
-        public UserController(IAuthService authService, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
+
+        public UsersController(IAuthService authService, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
         {
             _authService = authService;
             _signInManager = signInManager;
@@ -30,11 +30,11 @@ namespace LibraryAPI.Controllers
         ///<remarks>
         ///Role can only be "User" or "Librarian".
         /// </remarks>
-        [HttpPost("Register")]
+        [HttpPost("register-user")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> RegisterUser( User user)
+        [Authorize(Roles = LibraryRoles.Librarian)]
+        public async Task<IActionResult> Register( User user)
         {
             var result =  await _authService.RegisterUser(user);
             if(!result.IsSuccess)
@@ -43,24 +43,26 @@ namespace LibraryAPI.Controllers
             }
             return Ok(result.IsSuccess); 
         }
-        
-        [HttpPost("Login")]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(200)]
-        public async Task<IActionResult> Login(LoginUser loginUser)
-        {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
 
-            var result =await _signInManager.PasswordSignInAsync(loginUser.Email, loginUser.Password, false, false);
-            if(result.Succeeded)
+        /// <summary>
+        /// Registers a new librarian.
+        /// </summary>
+        ///<remarks>
+        ///Role can only be "User" or "Librarian".
+        /// </remarks>
+        /// <response code="200">Returns users token.</response>
+        [HttpPost("register-librarian")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [Authorize(Roles = LibraryRoles.Admin)]
+        public async Task<IActionResult> RegisterLibrarian(User user)
+        {
+            var result = await _authService.RegisterLibrarian(user);
+            if (!result.IsSuccess)
             {
-                var tokenString = _authService.GenerateTokenString(loginUser);
-                return Ok(tokenString);
+                return BadRequest(result.Error);
             }
-            return BadRequest("Login attempt was unsuccessful!");
+            return Ok(result.IsSuccess);
         }
     }
 }

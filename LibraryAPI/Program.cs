@@ -1,4 +1,4 @@
-using LibraryAPI.Data;
+    using LibraryAPI.Data;
 using LibraryAPI.Models;
 using LibraryAPI.Repository;
 using LibraryAPI.Services;
@@ -14,8 +14,6 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-
 builder.Services.AddSwaggerGen(c=>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -53,7 +51,11 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddTransient<IAuthService, AuthService>();
-
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("LibrarianPolicy", policy => policy.RequireRole("Librarian"));
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+});
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.Password.RequiredLength = 5;
@@ -65,6 +67,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    
 }).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters()
@@ -78,6 +81,7 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration.GetSection("Jwt:Audience").Value,
         IssuerSigningKey =new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:Key").Value))
     };
+
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -90,6 +94,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseHttpsRedirection();
 

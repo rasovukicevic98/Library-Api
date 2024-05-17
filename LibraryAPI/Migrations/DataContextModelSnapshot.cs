@@ -47,6 +47,23 @@ namespace LibraryAPI.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "0",
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = "1",
+                            Name = "Librarian"
+                        },
+                        new
+                        {
+                            Id = "2",
+                            Name = "User"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -137,6 +154,24 @@ namespace LibraryAPI.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "userId",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "b1555376-f936-497c-89b2-68901186f976",
+                            Email = "admin@valcon.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@VALCON.COM",
+                            NormalizedUserName = "ADMIN@VALCON.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAECQPRC9Vwv9nR9phetP/u202QeK5lB5WWVAn2081quu+SOjfB+AJbPR2AGym4VvEgA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "07a96848-34a1-49b1-840f-4867f0f9fe63",
+                            TwoFactorEnabled = false,
+                            UserName = "admin@valcon.com"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -199,6 +234,13 @@ namespace LibraryAPI.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "userId",
+                            RoleId = "0"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
