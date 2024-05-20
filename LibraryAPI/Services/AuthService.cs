@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using CSharpFunctionalExtensions.ValueTasks;
+using LibraryAPI.Constants;
 using LibraryAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -40,7 +41,7 @@ namespace LibraryAPI.Services
 
             if (resultUser.Succeeded)
             {
-                var resultRole = await _userManager.AddToRoleAsync(identityUser, "User");
+                var resultRole = await _userManager.AddToRoleAsync(identityUser,LibraryRoles.User );
                 return Result.Success<User, IEnumerable<string>>(user);
             }
             return Result.Failure<User, IEnumerable<string>>(resultUser.Errors.Select(e => e.Description));
@@ -64,7 +65,7 @@ namespace LibraryAPI.Services
 
             if (resultUser.Succeeded)
             {
-                var resultRole = await _userManager.AddToRoleAsync(identityUser, "Librarian");
+                var resultRole = await _userManager.AddToRoleAsync(identityUser, LibraryRoles.Librarian);
                 return Result.Success<User, IEnumerable<string>>(user);
             }
             return Result.Failure<User, IEnumerable<string>>(resultUser.Errors.Select(e => e.Description));
@@ -88,7 +89,7 @@ namespace LibraryAPI.Services
         public async Task<string> GenerateTokenString(LoginUser loginUser)
         {
             var user = await _userManager.FindByEmailAsync(loginUser.Email);
-            IList<string> roles = await _userManager.GetRolesAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
             
             var claims = new List<Claim>
             {

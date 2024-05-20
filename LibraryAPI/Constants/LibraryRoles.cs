@@ -5,7 +5,6 @@
         public const string Admin = nameof(Admin);
         public const string Librarian = nameof(Librarian);
         public const string User = nameof(User);
-
     }
 
     public static class LibraryRoleIds
