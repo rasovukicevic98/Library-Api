@@ -16,12 +16,14 @@ namespace LibraryAPI.Services
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _config;
-        
-        public AuthService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration config)
+        private readonly SignInManager<IdentityUser> _signInManager;
+
+        public AuthService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration config, SignInManager<IdentityUser> signInManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _config = config;
+            _signInManager = signInManager;
         }
 
         public async Task<Result<User, IEnumerable<string>>> RegisterUser(User user)
@@ -59,8 +61,8 @@ namespace LibraryAPI.Services
                 TwoFactorEnabled = false,
                 LockoutEnabled = false,
                 AccessFailedCount = 0,
-            };
-
+            };            
+           
             var resultUser = await _userManager.CreateAsync(identityUser, user.Password);
 
             if (resultUser.Succeeded)
@@ -72,18 +74,22 @@ namespace LibraryAPI.Services
 
         }
 
-        public async Task<Result<bool, string>> Login(LoginUser loginUser)
+        public async Task<Result<IEnumerable<string>>> Login(LoginUser loginUser)
         {
-
-            var identityUser = _userManager.FindByEmailAsync(loginUser.Email);
-            if (identityUser is null)
+            var exist = await _userManager.FindByEmailAsync(loginUser.Email);
+            if(exist == null)
             {
-                List<string> potentialErrors = new List<string>();
-                string potentialError = "User " + loginUser.Email + " does not exist!";
-                potentialErrors.Add(potentialError);
-                return Result.Failure<bool, string>(potentialError);
+                return Result.Failure<IEnumerable<string>>("There is no user with :"+loginUser.Email+" email adress.");
             }
-            return Result.Success<bool, string>(true);
+           
+            var result = await _signInManager.PasswordSignInAsync(loginUser.Email, loginUser.Password, false, false);
+            
+            if(result.Succeeded)
+            {
+                string tokenString = await GenerateTokenString(loginUser);
+                return Result.Success<IEnumerable<string>>(new List<string> { tokenString } );
+            }
+            return Result.Failure<IEnumerable<string>>("Login attempt was unsuccessful. Please try again!");
         }
 
         public async Task<string> GenerateTokenString(LoginUser loginUser)

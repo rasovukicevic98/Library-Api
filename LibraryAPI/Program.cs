@@ -51,6 +51,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IAuthorRepository, AuthorRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddAuthorization(options =>
 {
@@ -60,6 +61,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.Password.RequiredLength = 5;
+
 }).AddEntityFrameworkStores<DataContext>()
 .AddDefaultTokenProviders();
 builder.Services.AddAuthentication(options =>

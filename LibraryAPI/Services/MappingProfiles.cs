@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LibraryAPI.Dto;
+using LibraryAPI.Migrations;
 using Microsoft.AspNetCore.Identity;
 
 namespace LibraryAPI.Services
@@ -9,6 +10,7 @@ namespace LibraryAPI.Services
         public MappingProfiles()
         {
             CreateMap<UserDto, IdentityUser>().ReverseMap();
+            CreateMap<UpdateUser, IdentityUser>().ReverseMap();
         }
     }
 }

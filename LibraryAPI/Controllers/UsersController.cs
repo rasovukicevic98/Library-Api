@@ -31,11 +31,16 @@ namespace LibraryAPI.Controllers
         /// Registers a new user.
         /// </summary>
         [HttpPost("register-user")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = LibraryRoles.Librarian)]
         public async Task<IActionResult> Register(User user)
         {
+            var exist = await _userManager.FindByEmailAsync(user.Email);
+            if (exist != null)
+            {
+                return BadRequest("Email is already taken!");
+            }
             var result = await _authService.RegisterUser(user);
             if (!result.IsSuccess)
             {
@@ -48,10 +53,16 @@ namespace LibraryAPI.Controllers
         /// Registers a new librarian.
         /// </summary>
         [HttpPost("register-librarian")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = LibraryRoles.Admin)]
         public async Task<IActionResult> RegisterLibrarian(User user)
         {
+            var exist =await _userManager.FindByEmailAsync(user.Email);
+            if (exist != null)
+            {
+                return BadRequest("Email is already taken!");
+            }
             var result = await _authService.RegisterLibrarian(user);
             if (result.IsSuccess)
             {
@@ -64,7 +75,7 @@ namespace LibraryAPI.Controllers
         /// Returns all users.
         /// </summary>
         [HttpGet]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUsers()
         {
             var result = await _userRepository.GetUsersAsync();
@@ -72,8 +83,8 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(string id)
         {
             if (!ModelState.IsValid)
@@ -87,6 +98,6 @@ namespace LibraryAPI.Controllers
                 return Ok(result);
             }
             return NotFound("There is no user with id: "+id);            
-        }
+        }   
     }
 }

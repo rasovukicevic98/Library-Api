@@ -19,21 +19,20 @@ namespace LibraryAPI.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Login(LoginUser loginUser)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            var result = await _signInManager.PasswordSignInAsync(loginUser.Email, loginUser.Password, false, false);
-            if (result.Succeeded)
+            var result =await _authService.Login(loginUser);
+            if (result.IsSuccess)
             {
-                var tokenString = await _authService.GenerateTokenString(loginUser);
-                return Ok(tokenString);
+                return Ok(result.Value);
             }
-            return BadRequest("Login attempt was unsuccessful!");
+            return BadRequest(result.Error);
         }
     }
 }
