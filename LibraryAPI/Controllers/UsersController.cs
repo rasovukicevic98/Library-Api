@@ -76,6 +76,7 @@ namespace LibraryAPI.Controllers
         /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUsers()
         {
             var result = await _userRepository.GetUsersAsync();
