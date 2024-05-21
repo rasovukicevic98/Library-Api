@@ -11,11 +11,12 @@ namespace LibraryAPI.Data
     public class DataContext : IdentityDbContext
     {
 
-        public DataContext(DbContextOptions<DataContext> options):base(options) 
-        {            
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        {
         }
 
-        public DbSet<Author> Authors { get; set; }  
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<Book> Books { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -30,7 +31,7 @@ namespace LibraryAPI.Data
             };
             var passwordHasher = new PasswordHasher<IdentityUser>();
             adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, "passworD1!");
-            
+
             modelBuilder.Entity<IdentityUser>().HasData(adminUser);
             modelBuilder.Entity<IdentityRole>().HasData(
                 new IdentityRole<string> { Id = LibraryRoleIds.Admin, Name = LibraryRoles.Admin },
@@ -42,7 +43,14 @@ namespace LibraryAPI.Data
                 RoleId = LibraryRoleIds.Admin,
                 UserId = adminUser.Id
             });
-            
+
+            modelBuilder.Entity<Author>()
+            .HasMany(a => a.Books)
+            .WithMany(b => b.Authors)
+            .UsingEntity<Dictionary<string, object>>(
+                 "AuthorBook",
+            ab => ab.HasOne<Book>().WithMany().HasForeignKey("BookId"),
+            ab => ab.HasOne<Author>().WithMany().HasForeignKey("AuthorId"));
         }
     }
 }

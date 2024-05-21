@@ -4,6 +4,7 @@ using LibraryAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240521113217_addBook")]
+    partial class addBook
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace LibraryAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AuthorBook", b =>
-                {
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AuthorId", "BookId");
-
-                    b.HasIndex("BookId");
-
-                    b.ToTable("AuthorBook");
-                });
 
             modelBuilder.Entity("LibraryAPI.Models.Author", b =>
                 {
@@ -68,49 +56,6 @@ namespace LibraryAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Authors");
-                });
-
-            modelBuilder.Entity("LibraryAPI.Models.Book", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Genre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ISBN")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("NumberOfPages")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TotalCopies")
-                        .HasColumnType("int");
-
-                    b.Property<int>("YearPublished")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Books");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -251,15 +196,15 @@ namespace LibraryAPI.Migrations
                         {
                             Id = "userId",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2b5bf90c-fc5c-4cb8-b895-d5bcc994fca8",
+                            ConcurrencyStamp = "2c7bf418-c96a-4497-971e-6645449300a9",
                             Email = "admin@valcon.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@VALCON.COM",
                             NormalizedUserName = "ADMIN@VALCON.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEoSbssiAkesNukmFBFPBbwBi6aaGzC4u7D7uWivTdaysGyrlOlyOrfi6yKo24sQ/A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMr9PWlaPCH5bByEAbDIO3GsyyQPnZsaFK13m8Tt6owTSrl8VLiIedwE4CPg5zUVHg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b172b9a7-4668-49d8-a7eb-0c63ce574f14",
+                            SecurityStamp = "1612ab9d-fb42-40d5-98b5-762f2b5145e9",
                             TwoFactorEnabled = false,
                             UserName = "admin@valcon.com"
                         });
@@ -351,21 +296,6 @@ namespace LibraryAPI.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("AuthorBook", b =>
-                {
-                    b.HasOne("LibraryAPI.Models.Author", null)
-                        .WithMany()
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LibraryAPI.Models.Book", null)
-                        .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

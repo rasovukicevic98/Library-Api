@@ -9,5 +9,6 @@
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedAt { get; set; }
         public bool IsDeleted { get; set; }
+        public ICollection<Book> Books { get; set; }
     }
 }
