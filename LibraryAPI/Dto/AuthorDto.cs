@@ -1,4 +1,6 @@
-﻿namespace LibraryAPI.Dto
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LibraryAPI.Dto
 {
     public class AuthorDto
     {

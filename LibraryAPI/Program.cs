@@ -1,4 +1,6 @@
-    using LibraryAPI.Data;
+using LibraryAPI.Contracts.Repositories;
+using LibraryAPI.Contracts.Services;
+using LibraryAPI.Data;
 using LibraryAPI.Models;
 using LibraryAPI.Repository;
 using LibraryAPI.Services;
@@ -50,8 +52,16 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddTransient<IAuthService, AuthService>();
-builder.Services.AddTransient<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IBookRepository, BooksRepository>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddAuthorization(options =>
 {
@@ -86,7 +96,7 @@ builder.Services.AddAuthentication(options =>
 
 });
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddControllers();
 var app = builder.Build();
 

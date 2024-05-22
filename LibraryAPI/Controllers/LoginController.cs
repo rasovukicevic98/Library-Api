@@ -1,5 +1,5 @@
-﻿using LibraryAPI.Models;
-using LibraryAPI.Services;
+﻿using LibraryAPI.Contracts.Services;
+using LibraryAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +10,9 @@ namespace LibraryAPI.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        private readonly IAuthenticationService _authService;
         private readonly SignInManager<IdentityUser> _signInManager;
-        public LoginController(IAuthService authService, SignInManager<IdentityUser> signInManager)
+        public LoginController(IAuthenticationService authService, SignInManager<IdentityUser> signInManager)
         {
             _authService = authService;
             _signInManager = signInManager;

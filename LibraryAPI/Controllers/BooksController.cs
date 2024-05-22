@@ -1,11 +1,9 @@
 ﻿using LibraryAPI.Constants;
 using LibraryAPI.Contracts.Services;
-using LibraryAPI.Data;
 using LibraryAPI.Dto;
-using LibraryAPI.Models;
+using LibraryAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryAPI.Controllers
@@ -13,53 +11,57 @@ namespace LibraryAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class AuthorController : ControllerBase
+    public class BooksController : ControllerBase
     {
-        private readonly IAuthorService _authorRepository;
+        private readonly IBookService _bookService;
 
-        public AuthorController(IAuthorService authorRepository)
+        public BooksController(IBookService bookService)
         {
-            _authorRepository = authorRepository;
+            _bookService = bookService;
         }
 
         /// <summary>
-        /// Creates a new Author.
+        /// Creates a new Book.
         /// </summary>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = LibraryRoles.Librarian)]
-        public async Task<IActionResult> Post(AuthorDto author)
+        public async Task<IActionResult> Post(BooksDto bookDto)
         {
-            var result =await _authorRepository.AddAuthor(author);
-            if(result.IsSuccess)
+            if (!ModelState.IsValid)
             {
-                return Ok("Author successfully created");
+                return BadRequest(ModelState);
             }
-            return BadRequest(result.Error);            
-        }            
+            var result = await _bookService.AddBookAsync(bookDto);
+            if (result.IsSuccess)
+            {
+                return Ok("Book successfully created");
+            }
+            return BadRequest(result.Error);
+        }
 
         /// <summary>
-        /// Returns all Authors.
+        /// Returns all Books.
         /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAuthors()
+        public async Task<IActionResult> GetBooks()
         {
-            var result = _authorRepository.GetAllAuthors();
+            var result = _bookService.GetAllBooksAsync();
             return Ok(result);
         }
 
         /// <summary>
-        /// Returns an Author with specific id.
+        /// Returns a Book with specific id.
         /// </summary>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType (StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAuthors(int id)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetBook(int id)
         {
-            var res = await _authorRepository.GetAuthorById(id);
-            if(res.IsSuccess)
+            var res = await _bookService.GetBookByIdAsync(id);
+            if (res.IsSuccess)
             {
                 return Ok(res.Value);
             }
@@ -67,14 +69,15 @@ namespace LibraryAPI.Controllers
         }
 
         /// <summary>
-        /// Deletes an Author
+        /// Deletes a Book
         /// </summary>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(Roles = LibraryRoles.Librarian)]
         public async Task<IActionResult> Delete(int id)
         {
-            var res =await _authorRepository?.DeleteAuthor(id);
+            var res = await _bookService.DeleteBookAsync(id);
             if (res.IsSuccess)
             {
                 return Ok("Deleted successfully.");
@@ -83,17 +86,22 @@ namespace LibraryAPI.Controllers
         }
 
         /// <summary>
-        /// Updates an existing Author.
+        /// Updates an existing Book.
         /// </summary>
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(int id, AuthorDto authorDto)
+        [Authorize(Roles = LibraryRoles.Librarian)]
+        public async Task<IActionResult> Update(int id, BooksDto bookDto)
         {
-            var res =await _authorRepository.UpdateAuthor(id, authorDto);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var res = await _bookService.UpdateBookAsync(id, bookDto);
             if (res.IsSuccess)
             {
-                return Ok(res.Value);
+                return Ok();
             }
             return NotFound(res.Error);
         }

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using LibraryAPI.Constants;
+using LibraryAPI.Contracts.Services;
 using LibraryAPI.Dto;
 using LibraryAPI.Models;
-using LibraryAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,14 +12,15 @@ namespace LibraryAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class UsersController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        private readonly IAuthenticationService _authService;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userRepository;
 
-        public UsersController(IAuthService authService, UserManager<IdentityUser> userManager,IMapper mapper, IUserRepository userRepository)
+        public UsersController(IAuthenticationService authService, UserManager<IdentityUser> userManager,IMapper mapper, IUserService userRepository)
         {
             _authService = authService;           
             _userManager = userManager;

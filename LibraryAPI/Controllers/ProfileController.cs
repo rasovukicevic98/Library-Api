@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LibraryAPI.Constants;
+using LibraryAPI.Contracts.Services;
 using LibraryAPI.Models;
-using LibraryAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,28 +12,25 @@ namespace LibraryAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProfileController : ControllerBase
     {
-        private readonly IAuthService _authService;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
+        private readonly IProfileService _profileService;
 
-        public ProfileController(IAuthService authService, UserManager<IdentityUser> userManager, IMapper mapper, IUserRepository userRepository)
+        public ProfileController(IProfileService profileService)
         {
-            _authService = authService;
-            _userManager = userManager;
-            _mapper = mapper;
-            _userRepository = userRepository;
+            _profileService = profileService;
         }
+
         [HttpPut("password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = LibraryRoles.User)]
-        public async Task<IActionResult> UpdatePassword( UpdateUser updateUser)
+        public async Task<IActionResult> UpdatePassword(UpdateUser updateUser)
         {
             var email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
-            var user = await _userManager.FindByEmailAsync(email);
+            var result = await _profileService.UpdateUserPasswordAsync(email, updateUser);
+           
 
             if (!ModelState.IsValid)
             {
@@ -42,8 +39,8 @@ namespace LibraryAPI.Controllers
             if (updateUser == null)
             {
                 return BadRequest();
-            }            
-            var result = await _userRepository.UpdateUserPasswordAsync(user.Id, updateUser);
+            }
+            
             if (result.IsSuccess)
             {
                 return Ok("You have successfully changed password");
@@ -57,13 +54,15 @@ namespace LibraryAPI.Controllers
         [Authorize(Roles = LibraryRoles.User)]
         public async Task<IActionResult> Update(UpdateProfile updateProfile)
         {
-            var email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
-            var user=await _userManager.FindByEmailAsync(email);
-            if (updateProfile == null )
+            if (updateProfile == null)
             {
                 return BadRequest();
             }
-            var result = await _userRepository.UpdateUsernameAsync(updateProfile, user.Id);
+            var email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+
+            var result = await _profileService.UpdateUserProfile(updateProfile, email);
+            
+            
             if (result.IsSuccess)
             {
                 return Ok("You have successfully changed username");

@@ -1,9 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using LibraryAPI.Models;
 
-namespace LibraryAPI.Services
+namespace LibraryAPI.Contracts.Services
 {
-    public interface IAuthService
+    public interface IAuthenticationService
     {
         Task<Result<User, IEnumerable<string>>> RegisterUser(User user);
         Task<Result<User, IEnumerable<string>>> RegisterLibrarian(User user);
