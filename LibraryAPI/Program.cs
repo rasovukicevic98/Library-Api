@@ -61,6 +61,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IBookRentRepository, BookRentRepository>();
+builder.Services.AddScoped<IBookRentService, BookRentService>();
+
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddAuthorization(options =>

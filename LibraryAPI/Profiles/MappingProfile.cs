@@ -13,6 +13,7 @@ namespace LibraryAPI.Profiles
             CreateMap<UpdateUser, IdentityUser>().ReverseMap();
             CreateMap<Author, AuthorDto>().ReverseMap();
             CreateMap<Book, BooksDto>().ReverseMap();
+            CreateMap<BookRent, BookRentDto>().ReverseMap();
         }
     }
 }
