@@ -9,16 +9,16 @@ namespace LibraryAPI.Services
     public class ProfileService : IProfileService
     {
         private readonly IProfileRepository _profileRepository;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
 
-        public ProfileService(IProfileRepository profileRepository, UserManager<IdentityUser> userManager)
+        public ProfileService(IProfileRepository profileRepository, UserManager<User> userManager)
         {
             _profileRepository = profileRepository;
         }
 
         public async Task<Result<UpdateUser, IEnumerable<string>>> UpdateUserPasswordAsync(string email, UpdateUser updateUser)
         {
-            IdentityUser user = await _profileRepository.FindByEmailAsync(email);
+            User user = await _profileRepository.FindByEmailAsync(email);
           
             var res = await _profileRepository.CheckPasswordAsync(user, updateUser.OldPassword);
             if (!res)
@@ -39,7 +39,7 @@ namespace LibraryAPI.Services
 
         public async Task<Result<IEnumerable<string>>> UpdateUserProfile(UpdateProfile updateProfile, string email)
         {
-            IdentityUser user = await _profileRepository.FindByEmailAsync(email);
+            User user = await _profileRepository.FindByEmailAsync(email);
             if (user.UserName.Equals(updateProfile.UserName)) return Result.Failure<IEnumerable<string>>("You entered the same username.");
 
             if (await _profileRepository.FindByNameAsync(updateProfile.UserName) != null) return Result.Failure<IEnumerable<string>>("Username is alredy taken.");

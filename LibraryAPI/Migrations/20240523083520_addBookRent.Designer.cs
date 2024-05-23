@@ -4,6 +4,7 @@ using LibraryAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240523083520_addBookRent")]
+    partial class addBookRent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -114,11 +117,8 @@ namespace LibraryAPI.Migrations
 
             modelBuilder.Entity("LibraryAPI.Models.BookRent", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("BookId")
                         .HasColumnType("int");
@@ -132,17 +132,11 @@ namespace LibraryAPI.Migrations
                     b.Property<DateTime?>("ReturnDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "BookId");
 
                     b.HasIndex("BookId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BookRents");
+                    b.ToTable("BookRent");
                 });
 
             modelBuilder.Entity("LibraryAPI.Models.User", b =>
@@ -220,15 +214,15 @@ namespace LibraryAPI.Migrations
                         {
                             Id = "userId",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "360d7bc2-f542-431f-86d4-5e14f9fdc2b8",
+                            ConcurrencyStamp = "181fbe57-3ad4-4892-9009-4301e253b8f4",
                             Email = "admin@valcon.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@VALCON.COM",
                             NormalizedUserName = "ADMIN@VALCON.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECYxRyxl7wd0MsYZGVZz325+C0ttMxYNczEUV7gCkM2o8mFlaED07GCJxN/u2ZAHuw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEO4BXU055lodBLH2zMaV8e6mkRaCRzNr7HhCnmjCCXOuIk4rLmRBwaxAmwIeQVDnHA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6cf19e3f-ad4f-41bf-a6ed-b529ac5b1063",
+                            SecurityStamp = "8845eaa6-0361-414e-9558-7432f3bf5725",
                             TwoFactorEnabled = false,
                             UserName = "admin@valcon.com"
                         });

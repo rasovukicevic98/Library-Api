@@ -4,7 +4,8 @@
 
 namespace LibraryAPI.Migrations
 {
-    /// <inheritdoc />
+    
+    // <inheritdoc />
     public partial class alterUser : Migration
     {
         /// <inheritdoc />

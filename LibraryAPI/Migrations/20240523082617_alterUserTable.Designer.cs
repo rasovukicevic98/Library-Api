@@ -4,6 +4,7 @@ using LibraryAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240523082617_alterUserTable")]
+    partial class alterUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,39 +115,6 @@ namespace LibraryAPI.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("LibraryAPI.Models.BookRent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("RentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ReturnDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BookRents");
-                });
-
             modelBuilder.Entity("LibraryAPI.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -220,15 +190,15 @@ namespace LibraryAPI.Migrations
                         {
                             Id = "userId",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "360d7bc2-f542-431f-86d4-5e14f9fdc2b8",
+                            ConcurrencyStamp = "809f727e-cf6b-4344-8e41-73d59fcee184",
                             Email = "admin@valcon.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@VALCON.COM",
                             NormalizedUserName = "ADMIN@VALCON.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECYxRyxl7wd0MsYZGVZz325+C0ttMxYNczEUV7gCkM2o8mFlaED07GCJxN/u2ZAHuw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEACEcH5Ta1IPiCxD4kf1+Nh+zgE6ioSfNf0/bJmxy8rGh6ducZqOXyyO9MQKg53tBA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6cf19e3f-ad4f-41bf-a6ed-b529ac5b1063",
+                            SecurityStamp = "ebe44da3-6ff3-48e9-a73a-3c60814aecaf",
                             TwoFactorEnabled = false,
                             UserName = "admin@valcon.com"
                         });
@@ -406,25 +376,6 @@ namespace LibraryAPI.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LibraryAPI.Models.BookRent", b =>
-                {
-                    b.HasOne("LibraryAPI.Models.Book", "Book")
-                        .WithMany("BookRents")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LibraryAPI.Models.User", "User")
-                        .WithMany("BookRents")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Book");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -474,16 +425,6 @@ namespace LibraryAPI.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("LibraryAPI.Models.Book", b =>
-                {
-                    b.Navigation("BookRents");
-                });
-
-            modelBuilder.Entity("LibraryAPI.Models.User", b =>
-                {
-                    b.Navigation("BookRents");
                 });
 #pragma warning restore 612, 618
         }

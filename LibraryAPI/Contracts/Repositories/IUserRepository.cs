@@ -6,7 +6,7 @@ namespace LibraryAPI.Contracts.Repositories
 {
     public interface IUserRepository
     {
-        Task<IdentityUser> GetUserByIdAsync(string id);
-        Task<List<IdentityUser>> GetUsersAsync();
+        Task<User> GetUserByIdAsync(string id);
+        Task<List<User>> GetUsersAsync();
     }
 }

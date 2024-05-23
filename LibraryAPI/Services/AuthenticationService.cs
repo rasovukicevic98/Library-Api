@@ -2,6 +2,7 @@
 using CSharpFunctionalExtensions.ValueTasks;
 using LibraryAPI.Constants;
 using LibraryAPI.Contracts.Services;
+using LibraryAPI.Dto;
 using LibraryAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -14,22 +15,20 @@ namespace LibraryAPI.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<User> _userManager;       
         private readonly IConfiguration _config;
-        private readonly SignInManager<IdentityUser> _signInManager;      
+        private readonly SignInManager<User> _signInManager;      
 
-        public AuthenticationService( UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration config, SignInManager<IdentityUser> signInManager)
+        public AuthenticationService( UserManager<User> userManager, IConfiguration config, SignInManager<User> signInManager)
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
+            _userManager = userManager;            
             _config = config;
             _signInManager = signInManager;            
         }
 
-        public async Task<Result<User, IEnumerable<string>>> RegisterUser(User user)
+        public async Task<Result<RegisterUserDto, IEnumerable<string>>> RegisterUser(RegisterUserDto user)
         {
-            var identityUser = new IdentityUser
+            var identityUser = new User
             {
                 UserName = user.Name,
                 Email = user.Email,
@@ -45,15 +44,14 @@ namespace LibraryAPI.Services
             if (resultUser.Succeeded)
             {
                 var resultRole = await _userManager.AddToRoleAsync(identityUser,LibraryRoles.User );
-                return Result.Success<User, IEnumerable<string>>(user);
+                return Result.Success<RegisterUserDto, IEnumerable<string>>(user);
             }
-            return Result.Failure<User, IEnumerable<string>>(resultUser.Errors.Select(e => e.Description));
-
+            return Result.Failure<RegisterUserDto, IEnumerable<string>>(resultUser.Errors.Select(e => e.Description));
         }
 
-        public async Task<Result<User, IEnumerable<string>>> RegisterLibrarian(User user)
+        public async Task<Result<RegisterUserDto, IEnumerable<string>>> RegisterLibrarian(RegisterUserDto user)
         {
-            var identityUser = new IdentityUser
+            var identityUser = new User
             {
                 UserName = user.Name,
                 Email = user.Email,
@@ -69,9 +67,9 @@ namespace LibraryAPI.Services
             if (resultUser.Succeeded)
             {
                 var resultRole = await _userManager.AddToRoleAsync(identityUser, LibraryRoles.Librarian);
-                return Result.Success<User, IEnumerable<string>>(user);
+                return Result.Success<RegisterUserDto, IEnumerable<string>>(user);
             }
-            return Result.Failure<User, IEnumerable<string>>(resultUser.Errors.Select(e => e.Description));
+            return Result.Failure<RegisterUserDto, IEnumerable<string>>(resultUser.Errors.Select(e => e.Description));
 
         }
 

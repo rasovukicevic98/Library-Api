@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using LibraryAPI.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace LibraryAPI.Contracts.Repositories
 {
     public interface IProfileRepository
     {
-        Task<bool> CheckPasswordAsync(IdentityUser identityUser, string password);
-        Task<IdentityUser> FindByEmailAsync(string email);
-        Task<IdentityUser> FindByNameAsync(string name);
-        Task<bool> UpdateUserAsync(IdentityUser user);
-        Task<string> GeneratePasswordResetTokenAsync(IdentityUser identityUser);
-        Task<IdentityResult> ResetPasswordAsync(IdentityUser user, string token, string password);
+        Task<bool> CheckPasswordAsync(User identityUser, string password);
+        Task<User> FindByEmailAsync(string email);
+        Task<User> FindByNameAsync(string name);
+        Task<bool> UpdateUserAsync(User user);
+        Task<string> GeneratePasswordResetTokenAsync(User identityUser);
+        Task<IdentityResult> ResetPasswordAsync(User user, string token, string password);
     }
 }

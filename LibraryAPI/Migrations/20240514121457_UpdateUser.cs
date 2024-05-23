@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LibraryAPI.Migrations
 {
-    /// <inheritdoc />
+    
+    ///<inheritdoc />
     public partial class UpdateUser : Migration
     {
         /// <inheritdoc />

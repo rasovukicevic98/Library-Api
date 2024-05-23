@@ -8,19 +8,19 @@ namespace LibraryAPI.Repository
 {
     public class UserRepository : IUserRepository
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
 
-        public UserRepository(UserManager<IdentityUser> userManager)
+        public UserRepository(UserManager<User> userManager)
         {
             _userManager = userManager;
         }
 
-        public async Task<IdentityUser> GetUserByIdAsync(string id)
+        public async Task<User> GetUserByIdAsync(string id)
         {
             return await _userManager.FindByIdAsync(id);
         }
 
-        public async Task<List<IdentityUser>> GetUsersAsync()
+        public async Task<List<User>> GetUsersAsync()
         {
             return  _userManager.Users.ToList();
         }

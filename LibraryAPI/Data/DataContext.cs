@@ -8,7 +8,7 @@ using Microsoft.Identity.Client;
 
 namespace LibraryAPI.Data
 {
-    public class DataContext : IdentityDbContext
+    public class DataContext : IdentityDbContext<User>
     {
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
@@ -17,10 +17,11 @@ namespace LibraryAPI.Data
 
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
+        public DbSet<BookRent> BookRents { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            var adminUser = new IdentityUser
+            var adminUser = new User
             {
                 Id = "userId",
                 UserName = "admin@valcon.com",
@@ -29,10 +30,10 @@ namespace LibraryAPI.Data
                 NormalizedEmail = "ADMIN@VALCON.COM",
                 EmailConfirmed = true
             };
-            var passwordHasher = new PasswordHasher<IdentityUser>();
+            var passwordHasher = new PasswordHasher<User>();
             adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, "passworD1!");
 
-            modelBuilder.Entity<IdentityUser>().HasData(adminUser);
+            modelBuilder.Entity<User>().HasData(adminUser);
             modelBuilder.Entity<IdentityRole>().HasData(
                 new IdentityRole<string> { Id = LibraryRoleIds.Admin, Name = LibraryRoles.Admin },
                 new IdentityRole<string> { Id = LibraryRoleIds.Librarian, Name = LibraryRoles.Librarian },
@@ -51,6 +52,18 @@ namespace LibraryAPI.Data
                  "AuthorBook",
             ab => ab.HasOne<Book>().WithMany().HasForeignKey("BookId"),
             ab => ab.HasOne<Author>().WithMany().HasForeignKey("AuthorId"));
+
+            modelBuilder.Entity<BookRent>()
+                .HasKey(r => new {r.Id });
+            modelBuilder.Entity<BookRent>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.BookRents)
+                .HasForeignKey(r => r.UserId);
+
+            modelBuilder.Entity<BookRent>()
+                .HasOne(r => r.Book)
+                .WithMany(b => b.BookRents)
+                .HasForeignKey(r => r.BookId);
         }
-    }
+    }    
 }

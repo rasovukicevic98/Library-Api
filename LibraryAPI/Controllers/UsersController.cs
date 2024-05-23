@@ -16,11 +16,11 @@ namespace LibraryAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IAuthenticationService _authService;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly IUserService _userRepository;
 
-        public UsersController(IAuthenticationService authService, UserManager<IdentityUser> userManager,IMapper mapper, IUserService userRepository)
+        public UsersController(IAuthenticationService authService, UserManager<User> userManager,IMapper mapper, IUserService userRepository)
         {
             _authService = authService;           
             _userManager = userManager;
@@ -35,7 +35,7 @@ namespace LibraryAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = LibraryRoles.Librarian)]
-        public async Task<IActionResult> Register(User user)
+        public async Task<IActionResult> Register(RegisterUserDto user)
         {
             var exist = await _userManager.FindByEmailAsync(user.Email);
             if (exist != null)
@@ -57,7 +57,7 @@ namespace LibraryAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = LibraryRoles.Admin)]
-        public async Task<IActionResult> RegisterLibrarian(User user)
+        public async Task<IActionResult> RegisterLibrarian(RegisterUserDto user)
         {
             var exist =await _userManager.FindByEmailAsync(user.Email);
             if (exist != null)

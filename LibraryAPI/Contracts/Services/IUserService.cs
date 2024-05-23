@@ -7,8 +7,8 @@ namespace LibraryAPI.Contracts.Services
     public interface IUserService
     {
 
-        Task<List<UserDto>> GetUsersAsync();
-        Task<UserDto> GetUserAsync(string id);
+        Task<List<LoginUserDto>> GetUsersAsync();
+        Task<LoginUserDto> GetUserAsync(string id);
 
     }
 }

@@ -68,12 +68,15 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("LibrarianPolicy", policy => policy.RequireRole("Librarian"));
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
 });
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+
+
+builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
     options.Password.RequiredLength = 5;
 
 }).AddEntityFrameworkStores<DataContext>()
 .AddDefaultTokenProviders();
+builder.Services.AddScoped<UserManager<User>>();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -95,7 +98,6 @@ builder.Services.AddAuthentication(options =>
     };
 
 });
-
 
 builder.Services.AddControllers();
 var app = builder.Build();

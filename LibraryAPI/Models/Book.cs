@@ -16,7 +16,7 @@ namespace LibraryAPI.Models
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }
         public bool IsDeleted { get; set; }
-
+        public ICollection<BookRent> BookRents { get; set; }
         public Book(BooksDto bookDto)
         {
             Title = bookDto.Title;

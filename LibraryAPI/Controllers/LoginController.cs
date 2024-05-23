@@ -11,8 +11,9 @@ namespace LibraryAPI.Controllers
     public class LoginController : ControllerBase
     {
         private readonly IAuthenticationService _authService;
-        private readonly SignInManager<IdentityUser> _signInManager;
-        public LoginController(IAuthenticationService authService, SignInManager<IdentityUser> signInManager)
+        private readonly SignInManager<User> _signInManager;
+        
+        public LoginController(IAuthenticationService authService, SignInManager<User> signInManager)
         {
             _authService = authService;
             _signInManager = signInManager;

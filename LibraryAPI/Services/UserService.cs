@@ -23,25 +23,25 @@ namespace LibraryAPI.Services
             _userRepository = userRepository;
         }
 
-        public async Task<UserDto> GetUserAsync(string id)
+        public async Task<LoginUserDto> GetUserAsync(string id)
         {
-            IdentityUser user = await _userRepository.GetUserByIdAsync(id);
+            User user = await _userRepository.GetUserByIdAsync(id);
             if (user == null)
             {
                 return null;
             }
-            UserDto userDto = _mapper.Map<UserDto>(user);
+            LoginUserDto userDto = _mapper.Map<LoginUserDto>(user);
             return userDto;
         }
 
-        public async Task<List<UserDto>> GetUsersAsync()
+        public async Task<List<LoginUserDto>> GetUsersAsync()
         {
-            List<IdentityUser> users = await _userRepository.GetUsersAsync();
+            List<User> users = await _userRepository.GetUsersAsync();
             if (users == null)
             {
                 return null;
             }
-            var result = _mapper.Map<List<UserDto>>(users);
+            var result = _mapper.Map<List<LoginUserDto>>(users);
             return result;
         }
     }
