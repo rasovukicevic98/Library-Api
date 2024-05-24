@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/")]
     [ApiController]
     [Authorize]
     public class BookRentController : ControllerBase
@@ -61,6 +61,27 @@ namespace LibraryAPI.Controllers
             }
             return Ok(result.Value);
         }
-        
+
+        /// <summary>
+        /// Returns renting history for selected user.
+        /// </summary>
+        [HttpGet("users/{id}/rent-history")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(Roles = LibraryRoles.Librarian)]
+        public async Task<IActionResult> RentHistory(string id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _bookRentService.GetUserHistory(id);
+            if (result.IsFailure)
+            {
+                return NotFound(result.Error);
+            }
+            return Ok(result.Value);
+        }
+
     }
 }

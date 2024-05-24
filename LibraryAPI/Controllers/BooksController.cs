@@ -2,6 +2,7 @@
 using LibraryAPI.Contracts.Services;
 using LibraryAPI.Dto;
 using LibraryAPI.Repository;
+using LibraryAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +15,12 @@ namespace LibraryAPI.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
+        private readonly IBookRentService _bookRentService;
 
-        public BooksController(IBookService bookService)
+        public BooksController(IBookService bookService, IBookRentService bookRentService)
         {
             _bookService = bookService;
+            _bookRentService = bookRentService;
         }
 
         /// <summary>
@@ -104,6 +107,24 @@ namespace LibraryAPI.Controllers
                 return Ok();
             }
             return NotFound(res.Error);
+        }
+
+        /// <summary>
+        /// Returns renting history for selected book.
+        /// </summary>
+        [HttpGet("{id}/rent-history")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(Roles = $"{LibraryRoles.Librarian},{LibraryRoles.Admin}")]
+        public async Task<IActionResult> RentHistory(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _bookRentService.GetBookHistory(id);
+            
+            return Ok(result.Value);
         }
     }
 }

@@ -19,12 +19,21 @@ namespace LibraryAPI.Repository
             return Save();
         }
 
-        public BookRent GetActiveRent(int bookId, string userId)
+        public BookRent GetRentedBooks(int bookId, string userId)
         {
             return _context.BookRents
                 .Include(br => br.Book)
                 .Include(br => br.User)
                 .FirstOrDefault(br => br.BookId == bookId && br.UserId.Equals(userId) && br.ReturnDate == null);
+        }
+
+        public List<BookRent> GetRents(int bookId)
+        {
+            return _context.BookRents
+                .Include(br => br.Book)
+                .Include(br => br.User)
+                .Where(br => br.BookId == bookId && !br.Book.IsDeleted)
+                .ToList();
         }
 
         public bool UpdateBook(BookRent updateBook)
@@ -37,6 +46,19 @@ namespace LibraryAPI.Repository
         {
             var saved = _context.SaveChanges();
             return saved > 0;
+        }
+
+        public List<BookRent> GetUserRentHistory(string userId)
+        {
+            return _context.BookRents
+                .Include(br => br.User)
+                .Include(br => br.Book)
+                .Where(br => br.UserId.Equals(userId)).ToList();
+        }
+
+        public List<BookRent> GetBookRentHistory(int bookId)
+        {
+            return _context.BookRents.Where(br => br.BookId == bookId && !br.Book.IsDeleted).ToList();
         }
     }
 }

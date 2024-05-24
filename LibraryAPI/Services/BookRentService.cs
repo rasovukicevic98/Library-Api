@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CSharpFunctionalExtensions;
+using CSharpFunctionalExtensions.ValueTasks;
 using LibraryAPI.Constants;
 using LibraryAPI.Contracts.Repositories;
 using LibraryAPI.Contracts.Services;
@@ -7,6 +8,7 @@ using LibraryAPI.Dto;
 using LibraryAPI.Models;
 using LibraryAPI.Repository;
 using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 
 namespace LibraryAPI.Services
 {
@@ -72,7 +74,7 @@ namespace LibraryAPI.Services
             {
                 return Result.Failure<IEnumerable<string>>("There is no user with " + userId + " id.");
             }
-            BookRent bookRent = _bookRentRepository.GetActiveRent(bookReturnDto.BookId, userId);
+            BookRent bookRent = _bookRentRepository.GetRentedBooks(bookReturnDto.BookId, userId);
             if (bookRent == null)
             {
                 return Result.Failure<IEnumerable<string>>("There is no active  rent with user id:" + userId + " and book id: " + bookReturnDto.BookId + ".");
@@ -90,6 +92,32 @@ namespace LibraryAPI.Services
             book.TotalCopies++;
             _bookRepository.Update(book);
             return Result.Success<IEnumerable<string>>(new List<string> { "Successfully returned the book." });
+        }
+
+        public async Task<Result<List<BookRentHistoryDto>,IEnumerable<string>>> GetUserHistory(string userId)
+        {
+            if (!_userManager.Users.Any(U => U.Id.Equals(userId)))
+            {
+                return Result.Failure< List < BookRentHistoryDto > ,IEnumerable<string>>(new List<string> { "There is no user with " + userId + " id." });
+            }
+            
+            var result = _mapper.Map<List<BookRentHistoryDto>>(_bookRentRepository.GetUserRentHistory(userId));
+            return Result.Success<List<BookRentHistoryDto>, IEnumerable<string>>(result);
+        }
+
+        public async Task<Result<List<BookRentHistoryDto>, IEnumerable<string>>> GetUserHistoryByEmailAsync(string userEmail)
+        {
+            User user = await _userManager.FindByEmailAsync(userEmail);
+                       
+            var result = _mapper.Map<List<BookRentHistoryDto>>(_bookRentRepository.GetUserRentHistory(user.Id));
+            return Result.Success<List<BookRentHistoryDto>, IEnumerable<string>>(result);
+        }
+
+        public async Task<Result<List<BookRentHistoryDto>, IEnumerable<string>>> GetBookHistory(int bookId)
+        {
+            List<BookRentHistoryDto> bookRentHistoryDtos = _mapper.Map<List<BookRentHistoryDto>>(_bookRentRepository.GetRents(bookId));
+                        
+            return Result.Success<List<BookRentHistoryDto>, IEnumerable<string>>(bookRentHistoryDtos);
         }
     }
 }

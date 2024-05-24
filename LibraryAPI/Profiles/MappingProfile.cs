@@ -14,6 +14,10 @@ namespace LibraryAPI.Profiles
             CreateMap<Author, AuthorDto>().ReverseMap();
             CreateMap<Book, BooksDto>().ReverseMap();
             CreateMap<BookRent, BookRentDto>().ReverseMap();
+            CreateMap<BookRent, BookRentHistoryDto>()
+                .ForMember(dest => dest.BookName, opt => opt.MapFrom(src => src.Book.Title))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+                .ReverseMap();
         }
     }
 }

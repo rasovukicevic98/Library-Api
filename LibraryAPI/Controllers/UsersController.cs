@@ -3,9 +3,11 @@ using LibraryAPI.Constants;
 using LibraryAPI.Contracts.Services;
 using LibraryAPI.Dto;
 using LibraryAPI.Models;
+using LibraryAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 
 namespace LibraryAPI.Controllers
@@ -19,13 +21,15 @@ namespace LibraryAPI.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly IUserService _userRepository;
+        private readonly IBookRentService _bookRentService;
 
-        public UsersController(IAuthenticationService authService, UserManager<User> userManager,IMapper mapper, IUserService userRepository)
+        public UsersController(IAuthenticationService authService, UserManager<User> userManager,IMapper mapper, IUserService userRepository, IBookRentService bookRentService)
         {
             _authService = authService;           
             _userManager = userManager;
             _mapper = mapper;
             _userRepository = userRepository;
+            _bookRentService = bookRentService;
         }
 
         /// <summary>
@@ -100,6 +104,30 @@ namespace LibraryAPI.Controllers
                 return Ok(result);
             }
             return NotFound("There is no user with id: "+id);            
-        }   
+        }
+
+        /// <summary>
+        /// Returns renting history for loged-in user.
+        /// </summary>
+        [HttpGet("users/{id}/return")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(Roles = LibraryRoles.User)]
+        public async Task<IActionResult> RentHistory(string id)
+        {
+            var email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _bookRentService.GetUserHistoryByEmailAsync(email);
+            if (result.IsFailure)
+            {
+                return NotFound(result.Error);
+            }
+            return Ok(result.Value);
+        }
+
     }
 }
