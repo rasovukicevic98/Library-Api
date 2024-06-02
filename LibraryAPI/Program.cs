@@ -79,6 +79,7 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 
 }).AddEntityFrameworkStores<DataContext>()
 .AddDefaultTokenProviders();
+
 builder.Services.AddScoped<UserManager<User>>();
 builder.Services.AddAuthentication(options =>
 {

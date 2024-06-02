@@ -23,6 +23,34 @@ namespace LibraryAPI.Controllers
         }
 
         /// <summary>
+        /// Returns an Author with specific id.
+        /// </summary>
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAuthors(int id)
+        {
+            var res = await _authorRepository.GetAuthorById(id);
+            if (res.IsSuccess)
+            {
+                return Ok(res.Value);
+            }
+            return NotFound(res.Error);
+        }
+
+
+        /// <summary>
+        /// Returns all Authors.
+        /// </summary>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAuthors()
+        {
+            var result = _authorRepository.GetAllAuthors();
+            return Ok(result);
+        }
+
+        /// <summary>
         /// Creates a new Author.
         /// </summary>
         [HttpPost]
@@ -37,29 +65,18 @@ namespace LibraryAPI.Controllers
                 return Ok("Author successfully created");
             }
             return BadRequest(result.Error);            
-        }            
-
-        /// <summary>
-        /// Returns all Authors.
-        /// </summary>
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAuthors()
-        {
-            var result = _authorRepository.GetAllAuthors();
-            return Ok(result);
         }
 
         /// <summary>
-        /// Returns an Author with specific id.
+        /// Updates an existing Author.
         /// </summary>
-        [HttpGet("{id}")]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType (StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAuthors(int id)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Update(int id, AuthorDto authorDto)
         {
-            var res = await _authorRepository.GetAuthorById(id);
-            if(res.IsSuccess)
+            var res = await _authorRepository.UpdateAuthor(id, authorDto);
+            if (res.IsSuccess)
             {
                 return Ok(res.Value);
             }
@@ -81,21 +98,6 @@ namespace LibraryAPI.Controllers
             }
             return NotFound(res.Error);
         }
-
-        /// <summary>
-        /// Updates an existing Author.
-        /// </summary>
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(int id, AuthorDto authorDto)
-        {
-            var res =await _authorRepository.UpdateAuthor(id, authorDto);
-            if (res.IsSuccess)
-            {
-                return Ok(res.Value);
-            }
-            return NotFound(res.Error);
-        }
+                
     }
 }
