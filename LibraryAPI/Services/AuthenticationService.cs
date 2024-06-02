@@ -1,6 +1,8 @@
-﻿using CSharpFunctionalExtensions;
+﻿using AutoMapper;
+using CSharpFunctionalExtensions;
 using CSharpFunctionalExtensions.ValueTasks;
 using LibraryAPI.Constants;
+using LibraryAPI.Contracts.Repositories;
 using LibraryAPI.Contracts.Services;
 using LibraryAPI.Dto;
 using LibraryAPI.Models;
@@ -15,35 +17,30 @@ namespace LibraryAPI.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly UserManager<User> _userManager;       
+        private readonly UserManager<User> _userManager;
         private readonly IConfiguration _config;
-        private readonly SignInManager<User> _signInManager;      
+        private readonly SignInManager<User> _signInManager;
+        private readonly IMapper _mapper;
+        private readonly IAuthenticationRepository _authenticationRepository;
 
-        public AuthenticationService( UserManager<User> userManager, IConfiguration config, SignInManager<User> signInManager)
+        public AuthenticationService(UserManager<User> userManager, IConfiguration config, SignInManager<User> signInManager, IMapper mapper, IAuthenticationRepository authenticationRepository)
         {
-            _userManager = userManager;            
+            _userManager = userManager;
             _config = config;
-            _signInManager = signInManager;            
+            _signInManager = signInManager;
+            _mapper = mapper;
+            _authenticationRepository = authenticationRepository;
         }
 
         public async Task<Result<RegisterUserDto, IEnumerable<string>>> RegisterUser(RegisterUserDto user)
         {
-            var identityUser = new User
-            {
-                UserName = user.Name,
-                Email = user.Email,
-                EmailConfirmed = true,
-                PhoneNumberConfirmed = true,
-                TwoFactorEnabled = false,
-                LockoutEnabled = false,
-                AccessFailedCount = 0,
-            };
+            var identityUser = _mapper.Map<User>(user);
 
-            var resultUser = await _userManager.CreateAsync(identityUser, user.Password);
+            var resultUser = await _authenticationRepository.RegisterNewUserAsync(identityUser);
 
             if (resultUser.Succeeded)
             {
-                var resultRole = await _userManager.AddToRoleAsync(identityUser,LibraryRoles.User );
+                var resultRole = await _authenticationRepository.AssignLibrarianRoleAsync(identityUser);
                 return Result.Success<RegisterUserDto, IEnumerable<string>>(user);
             }
             return Result.Failure<RegisterUserDto, IEnumerable<string>>(resultUser.Errors.Select(e => e.Description));
@@ -51,22 +48,13 @@ namespace LibraryAPI.Services
 
         public async Task<Result<RegisterUserDto, IEnumerable<string>>> RegisterLibrarian(RegisterUserDto user)
         {
-            var identityUser = new User
-            {
-                UserName = user.Name,
-                Email = user.Email,
-                EmailConfirmed = true,
-                PhoneNumberConfirmed = true,
-                TwoFactorEnabled = false,
-                LockoutEnabled = false,
-                AccessFailedCount = 0,
-            };            
-           
-            var resultUser = await _userManager.CreateAsync(identityUser, user.Password);
+            var identityUser = _mapper.Map<User>(user);
+
+            var resultUser = await _authenticationRepository.RegisterNewUserAsync(identityUser);
 
             if (resultUser.Succeeded)
             {
-                var resultRole = await _userManager.AddToRoleAsync(identityUser, LibraryRoles.Librarian);
+                var resultRole = await _authenticationRepository.AssignUserRoleAsync(identityUser);
                 return Result.Success<RegisterUserDto, IEnumerable<string>>(user);
             }
             return Result.Failure<RegisterUserDto, IEnumerable<string>>(resultUser.Errors.Select(e => e.Description));
@@ -76,17 +64,17 @@ namespace LibraryAPI.Services
         public async Task<Result<IEnumerable<string>>> Login(LoginUser loginUser)
         {
             var exist = await _userManager.FindByEmailAsync(loginUser.Email);
-            if(exist == null)
+            if (exist == null)
             {
-                return Result.Failure<IEnumerable<string>>("There is no user with :"+loginUser.Email+" email adress.");
+                return Result.Failure<IEnumerable<string>>("There is no user with :" + loginUser.Email + " email adress.");
             }
-           
+
             var result = await _signInManager.PasswordSignInAsync(loginUser.Email, loginUser.Password, false, false);
-            
-            if(result.Succeeded)
+
+            if (result.Succeeded)
             {
                 string tokenString = await GenerateTokenString(loginUser);
-                return Result.Success<IEnumerable<string>>(new List<string> { tokenString } );
+                return Result.Success<IEnumerable<string>>(new List<string> { tokenString });
             }
             return Result.Failure<IEnumerable<string>>("Login attempt was unsuccessful. Please try again!");
         }
@@ -95,7 +83,7 @@ namespace LibraryAPI.Services
         {
             var user = await _userManager.FindByEmailAsync(loginUser.Email);
             var roles = await _userManager.GetRolesAsync(user);
-            
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, loginUser.Email),
