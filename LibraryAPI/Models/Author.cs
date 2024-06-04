@@ -1,4 +1,6 @@
-﻿namespace LibraryAPI.Models
+﻿using System.Text.Json.Serialization;
+
+namespace LibraryAPI.Models
 {
     public class Author
     {
@@ -9,6 +11,7 @@
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedAt { get; set; }
         public bool IsDeleted { get; set; }
+        [JsonIgnore]
         public ICollection<Book> Books { get; set; }
     }
 }

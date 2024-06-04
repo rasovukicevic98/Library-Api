@@ -18,9 +18,9 @@ namespace LibraryAPI.Repository
             _userManager = userManager;
         }
 
-        public async Task<Microsoft.AspNetCore.Identity.IdentityResult> RegisterNewUserAsync(User user)
+        public async Task<Microsoft.AspNetCore.Identity.IdentityResult> RegisterNewUserAsync(User user, string password)
         {
-            Microsoft.AspNetCore.Identity.IdentityResult result = await _userManager.CreateAsync(user);
+            Microsoft.AspNetCore.Identity.IdentityResult result = await _userManager.CreateAsync(user, password);
             return result;
         }
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using System.Net;
 
 namespace LibraryAPI.Data
 {
@@ -18,6 +19,7 @@ namespace LibraryAPI.Data
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<BookRent> BookRents { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -54,7 +56,7 @@ namespace LibraryAPI.Data
             ab => ab.HasOne<Author>().WithMany().HasForeignKey("AuthorId"));
 
             modelBuilder.Entity<BookRent>()
-                .HasKey(r => new {r.Id });
+                .HasKey(r => new { r.Id });
             modelBuilder.Entity<BookRent>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.BookRents)
@@ -64,6 +66,19 @@ namespace LibraryAPI.Data
                 .HasOne(r => r.Book)
                 .WithMany(b => b.BookRents)
                 .HasForeignKey(r => r.BookId);
+
+            modelBuilder.Entity<Review>()
+                .HasKey(br => new { br.UserId, br.BookId });
+
+            modelBuilder.Entity<Review>()
+                .HasOne(b => b.Book)
+                .WithMany(br => br.Reviews)
+                .HasForeignKey(b => b.BookId);
+
+            modelBuilder.Entity<Review>()
+                .HasOne(u => u.Reviewer)
+                .WithMany(r => r.Reviews)
+                .HasForeignKey(u => u.UserId);
         }
-    }    
+    }
 }

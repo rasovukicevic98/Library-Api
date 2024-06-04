@@ -1,4 +1,5 @@
 ﻿using LibraryAPI.Contracts.Services;
+using LibraryAPI.Dto;
 using LibraryAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -22,7 +23,7 @@ namespace LibraryAPI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Login(LoginUser loginUser)
+        public async Task<IActionResult> Login(LoginUserDto loginUser)
         {
             if (!ModelState.IsValid)
             {

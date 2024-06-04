@@ -11,6 +11,6 @@ namespace LibraryAPI.Contracts.Repositories
         bool Add(Book book);
         bool Update(Book book);
         bool Delete(Book book);
-        public bool ExistById(int id);
+        public bool ExistById(int id);        
     }
 }

@@ -10,6 +10,6 @@ namespace LibraryAPI.Contracts.Services
         Task<Result<IEnumerable<string>>> AddBookAsync(BooksDto bookDto);
         Task<Result<IEnumerable<string>>> UpdateBookAsync(int id, BooksDto bookDto);
         Task<Result<IEnumerable<string>>> DeleteBookAsync(int id);
-
+                
     }
 }

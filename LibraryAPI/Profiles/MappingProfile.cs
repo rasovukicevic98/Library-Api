@@ -10,7 +10,7 @@ namespace LibraryAPI.Profiles
         public MappingProfile()
         {
             CreateMap<LoginUserDto, IdentityUser>().ReverseMap();
-            CreateMap<UpdateUser, IdentityUser>().ReverseMap();
+            CreateMap<UpdateUserDto, IdentityUser>().ReverseMap();
             CreateMap<Author, AuthorDto>().ReverseMap();
             CreateMap<Book, BooksDto>().ReverseMap();
             CreateMap<BookRent, BookRentDto>().ReverseMap();
@@ -19,13 +19,14 @@ namespace LibraryAPI.Profiles
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
                 .ReverseMap();
             CreateMap<RegisterUserDto, User>()
-            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-            .ForMember(dest => dest.EmailConfirmed, opt => opt.MapFrom(src => true))
-            .ForMember(dest => dest.PhoneNumberConfirmed, opt => opt.MapFrom(src => true))
-            .ForMember(dest => dest.TwoFactorEnabled, opt => opt.MapFrom(src => false))
-            .ForMember(dest => dest.LockoutEnabled, opt => opt.MapFrom(src => false))
-            .ForMember(dest => dest.AccessFailedCount, opt => opt.MapFrom(src => 0));
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.EmailConfirmed, opt => opt.MapFrom(src => true))
+                .ForMember(dest => dest.PhoneNumberConfirmed, opt => opt.MapFrom(src => true))
+                .ForMember(dest => dest.TwoFactorEnabled, opt => opt.MapFrom(src => false))
+                .ForMember(dest => dest.LockoutEnabled, opt => opt.MapFrom(src => false))
+                .ForMember(dest => dest.AccessFailedCount, opt => opt.MapFrom(src => 0));
+            CreateMap<ReviewDto, Review>().ReverseMap();
         }
     }
 }

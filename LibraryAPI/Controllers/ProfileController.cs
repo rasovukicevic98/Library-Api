@@ -1,7 +1,7 @@
-﻿using AutoMapper;
+﻿                                                                                                                                                                using AutoMapper;
 using LibraryAPI.Constants;
 using LibraryAPI.Contracts.Services;
-using LibraryAPI.Models;
+using LibraryAPI.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,21 +12,22 @@ namespace LibraryAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = LibraryRoles.User)]
     public class ProfileController : ControllerBase
     {
         private readonly IProfileService _profileService;
+        private readonly IReviewService _reviewService;
 
-        public ProfileController(IProfileService profileService)
+        public ProfileController(IProfileService profileService, IReviewService reviewService)
         {
             _profileService = profileService;
+            _reviewService = reviewService;
         }
 
         [HttpPut("password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = LibraryRoles.User)]
-        public async Task<IActionResult> UpdatePassword(UpdateUser updateUser)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]        
+        public async Task<IActionResult> UpdatePassword(UpdateUserDto updateUser)
         {
             var email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
             var result = await _profileService.UpdateUserPasswordAsync(email, updateUser);
@@ -51,8 +52,7 @@ namespace LibraryAPI.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = LibraryRoles.User)]
-        public async Task<IActionResult> Update(UpdateProfile updateProfile)
+        public async Task<IActionResult> Update(UpdateProfileDto updateProfile)
         {
             if (updateProfile == null)
             {
@@ -69,5 +69,23 @@ namespace LibraryAPI.Controllers
             }
             return BadRequest(result.Error);
         }
+
+        /// <summary>
+        /// Returns all reviews loged-in user posted.
+        /// </summary>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetUserReviews()
+        {
+            var email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var result =await _reviewService.GetUserReviews(email);
+            if(result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+            return Ok(result.Value);
+        }
+
     }
 }

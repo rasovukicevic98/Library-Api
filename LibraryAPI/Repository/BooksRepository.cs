@@ -27,7 +27,7 @@ namespace LibraryAPI.Repository
         }
 
         public bool Delete(Book book)
-        {            
+        {
             book.IsDeleted = true;
             return Save();
         }
@@ -58,7 +58,7 @@ namespace LibraryAPI.Repository
             }
             return true;
         }
-        
+
 
         public bool Save()
         {

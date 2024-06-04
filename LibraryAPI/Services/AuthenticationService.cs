@@ -36,7 +36,7 @@ namespace LibraryAPI.Services
         {
             var identityUser = _mapper.Map<User>(user);
 
-            var resultUser = await _authenticationRepository.RegisterNewUserAsync(identityUser);
+            var resultUser = await _authenticationRepository.RegisterNewUserAsync(identityUser, user.Password);
 
             if (resultUser.Succeeded)
             {
@@ -50,7 +50,7 @@ namespace LibraryAPI.Services
         {
             var identityUser = _mapper.Map<User>(user);
 
-            var resultUser = await _authenticationRepository.RegisterNewUserAsync(identityUser);
+            var resultUser = await _authenticationRepository.RegisterNewUserAsync(identityUser, user.Password);
 
             if (resultUser.Succeeded)
             {
@@ -61,7 +61,7 @@ namespace LibraryAPI.Services
 
         }
 
-        public async Task<Result<IEnumerable<string>>> Login(LoginUser loginUser)
+        public async Task<Result<IEnumerable<string>>> Login(LoginUserDto loginUser)
         {
             var exist = await _userManager.FindByEmailAsync(loginUser.Email);
             if (exist == null)
@@ -79,7 +79,7 @@ namespace LibraryAPI.Services
             return Result.Failure<IEnumerable<string>>("Login attempt was unsuccessful. Please try again!");
         }
 
-        public async Task<string> GenerateTokenString(LoginUser loginUser)
+        public async Task<string> GenerateTokenString(LoginUserDto loginUser)
         {
             var user = await _userManager.FindByEmailAsync(loginUser.Email);
             var roles = await _userManager.GetRolesAsync(user);

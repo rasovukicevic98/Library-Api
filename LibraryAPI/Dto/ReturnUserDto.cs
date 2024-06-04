@@ -1,8 +1,8 @@
 ﻿namespace LibraryAPI.Dto
 {
-    public class LoginUserDto
+    public class ReturnUserDto
     {
+        public string UserName { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }
     }
 }
