@@ -1,5 +1,6 @@
 ﻿using LibraryAPI.Constants;
 using LibraryAPI.Dto;
+using System.Text.Json.Serialization;
 
 namespace LibraryAPI.Models
 {
@@ -8,6 +9,7 @@ namespace LibraryAPI.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public string ISBN { get; set; }
+        [JsonIgnore]
         public ICollection<Author> Authors { get; set; }
         public Genres Genre { get; set; }
         public int NumberOfPages { get; set; }
@@ -17,6 +19,7 @@ namespace LibraryAPI.Models
         public DateTime ModifiedAt { get; set; }
         public bool IsDeleted { get; set; }
         public ICollection<BookRent> BookRents { get; set; }
+        public ICollection<Review> Reviews { get; set; }
         public Book(BooksDto bookDto)
         {
             Title = bookDto.Title;

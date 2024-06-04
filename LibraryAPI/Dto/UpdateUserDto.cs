@@ -1,6 +1,6 @@
-﻿namespace LibraryAPI.Models
+﻿namespace LibraryAPI.Dto
 {
-    public class UpdateUser
+    public class UpdateUserDto
     {
         public string OldPassword { get; set; }
         public string NewPassword { get; set; }

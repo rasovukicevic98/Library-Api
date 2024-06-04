@@ -56,7 +56,7 @@ namespace LibraryAPI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = LibraryRoles.Librarian)]
+       // [Authorize(Roles = LibraryRoles.Librarian)]
         public async Task<IActionResult> Post(AuthorDto author)
         {
             var result =await _authorRepository.AddAuthor(author);

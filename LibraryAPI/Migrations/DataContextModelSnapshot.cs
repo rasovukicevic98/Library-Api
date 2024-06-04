@@ -145,6 +145,28 @@ namespace LibraryAPI.Migrations
                     b.ToTable("BookRents");
                 });
 
+            modelBuilder.Entity("LibraryAPI.Models.Review", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "BookId");
+
+                    b.HasIndex("BookId");
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("LibraryAPI.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -220,15 +242,15 @@ namespace LibraryAPI.Migrations
                         {
                             Id = "userId",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "360d7bc2-f542-431f-86d4-5e14f9fdc2b8",
+                            ConcurrencyStamp = "1503d57e-4311-4921-8ffb-1f0b9523486b",
                             Email = "admin@valcon.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@VALCON.COM",
                             NormalizedUserName = "ADMIN@VALCON.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECYxRyxl7wd0MsYZGVZz325+C0ttMxYNczEUV7gCkM2o8mFlaED07GCJxN/u2ZAHuw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOvqsyTisWFgCufFkdkVA8zxwtHOFedJ5FDbJohsoM5eADrSIkEAwfJQ9j+oZ+j7eQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6cf19e3f-ad4f-41bf-a6ed-b529ac5b1063",
+                            SecurityStamp = "c05320f7-ed7a-4954-a887-599d189e15fa",
                             TwoFactorEnabled = false,
                             UserName = "admin@valcon.com"
                         });
@@ -425,6 +447,25 @@ namespace LibraryAPI.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("LibraryAPI.Models.Review", b =>
+                {
+                    b.HasOne("LibraryAPI.Models.Book", "Book")
+                        .WithMany("Reviews")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryAPI.Models.User", "Reviewer")
+                        .WithMany("Reviews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Reviewer");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -479,11 +520,15 @@ namespace LibraryAPI.Migrations
             modelBuilder.Entity("LibraryAPI.Models.Book", b =>
                 {
                     b.Navigation("BookRents");
+
+                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("LibraryAPI.Models.User", b =>
                 {
                     b.Navigation("BookRents");
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

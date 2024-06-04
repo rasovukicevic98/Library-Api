@@ -31,7 +31,7 @@ namespace LibraryAPI.Services
             book.Authors = new List<Author>();
             foreach (int author in bookDto.Authors)
             {
-                
+
                 var authorExist = await _authorRepository.GetByIdAsync(author);
                 if (authorExist != null)
                 {
@@ -43,7 +43,7 @@ namespace LibraryAPI.Services
                     return Result.Failure<IEnumerable<string>>(error);
                 }
             }
-            
+
 
             if (!_booksRepository.Add(book))
             {
@@ -55,11 +55,11 @@ namespace LibraryAPI.Services
         public async Task<Result<IEnumerable<string>>> DeleteBookAsync(int id)
         {
             var book = _booksRepository.GetById(id);
-            if(book == null)
+            if (book == null)
             {
-                return Result.Failure<IEnumerable<string>>("There is no book with id:"+id);
+                return Result.Failure<IEnumerable<string>>("There is no book with id:" + id);
             }
-            var res = _booksRepository.Delete(book);            
+            var res = _booksRepository.Delete(book);
             return Result.Success<IEnumerable<string>>(Enumerable.Empty<string>());
         }
 
@@ -96,9 +96,9 @@ namespace LibraryAPI.Services
             book.Authors = new List<Author>();
             foreach (int author in bookDto.Authors)
             {
-                var authorExist =await _authorRepository.GetByIdAsync(author);
-                if (authorExist!=null)
-                {                    
+                var authorExist = await _authorRepository.GetByIdAsync(author);
+                if (authorExist != null)
+                {
                     book.Authors.Add(authorExist);
                 }
                 else

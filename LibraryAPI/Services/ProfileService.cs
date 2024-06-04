@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using LibraryAPI.Contracts.Repositories;
 using LibraryAPI.Contracts.Services;
+using LibraryAPI.Dto;
 using LibraryAPI.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,14 +17,14 @@ namespace LibraryAPI.Services
             _profileRepository = profileRepository;
         }
 
-        public async Task<Result<UpdateUser, IEnumerable<string>>> UpdateUserPasswordAsync(string email, UpdateUser updateUser)
+        public async Task<Result<UpdateUserDto, IEnumerable<string>>> UpdateUserPasswordAsync(string email, UpdateUserDto updateUser)
         {
             User user = await _profileRepository.FindByEmailAsync(email);
           
             var res = await _profileRepository.CheckPasswordAsync(user, updateUser.OldPassword);
             if (!res)
             {
-                return Result.Failure<UpdateUser, IEnumerable<string>>(new List<string> { "Old password is incorrect." });
+                return Result.Failure<UpdateUserDto, IEnumerable<string>>(new List<string> { "Old password is incorrect." });
             }
 
             var token = await _profileRepository.GeneratePasswordResetTokenAsync(user);
@@ -31,13 +32,13 @@ namespace LibraryAPI.Services
             var result = await _profileRepository.ResetPasswordAsync(user, token, updateUser.NewPassword);
             if (result.Succeeded)
             {
-                return Result.Success<UpdateUser, IEnumerable<string>>(updateUser);
+                return Result.Success<UpdateUserDto, IEnumerable<string>>(updateUser);
             }
 
-            return Result.Failure<UpdateUser, IEnumerable<string>>(result.Errors.Select(e => e.Description));
+            return Result.Failure<UpdateUserDto, IEnumerable<string>>(result.Errors.Select(e => e.Description));
         }
 
-        public async Task<Result<IEnumerable<string>>> UpdateUserProfile(UpdateProfile updateProfile, string email)
+        public async Task<Result<IEnumerable<string>>> UpdateUserProfile(UpdateProfileDto updateProfile, string email)
         {
             User user = await _profileRepository.FindByEmailAsync(email);
             if (user.UserName.Equals(updateProfile.UserName)) return Result.Failure<IEnumerable<string>>("You entered the same username.");
