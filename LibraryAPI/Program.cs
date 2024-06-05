@@ -20,18 +20,18 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddSwaggerGen(c=>
+builder.Services.AddSwaggerGen(c =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     c.IncludeXmlComments(xmlPath);
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-     {
-         Description = "JWT Authorization header using the Bearer scheme",
-         Type = SecuritySchemeType.Http,
-         Scheme = "bearer"
-     });
+    {
+        Description = "JWT Authorization header using the Bearer scheme",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -89,13 +89,15 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 }).AddEntityFrameworkStores<DataContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<DataGenerator>();
+
 builder.Services.AddScoped<UserManager<User>>();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    
+
 }).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters()
@@ -107,7 +109,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration.GetSection("Jwt:Issuer").Value,
         ValidAudience = builder.Configuration.GetSection("Jwt:Audience").Value,
-        IssuerSigningKey =new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:Key").Value))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:Key").Value))
     };
 
 });
@@ -119,6 +121,27 @@ builder.Services.AddControllers()
   });
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dataGenerator = scope.ServiceProvider.GetRequiredService<DataGenerator>();
+    var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+    if (!context.Books.Any())
+    {
+        var users = dataGenerator.GenerateUsers(10);
+        var authors = dataGenerator.GenerateAuthors(15);
+        var books = dataGenerator.GenerateBooks(20, authors);
+
+        context.Users.AddRange(users);
+        context.Authors.AddRange(authors);
+        context.Books.AddRange(books);
+        context.SaveChanges();
+        var reviews = dataGenerator.GenerateReviews(50, users, books, context);
+        context.Reviews.AddRange(reviews);
+
+        context.SaveChanges();
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -128,7 +151,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();    
+app.UseAuthentication();
 
 app.UseAuthorization();
 

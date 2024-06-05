@@ -3,8 +3,6 @@ using LibraryAPI.Constants;
 using LibraryAPI.Contracts.Services;
 using LibraryAPI.Dto;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
